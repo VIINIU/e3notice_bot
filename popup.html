@@ -1,54 +1,75 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <title>공지사항</title>
-  <style>
+    <meta charset="UTF-8">
+    <title>공지사항</title>
+    <style>
     body { width: 380px; font-family: 'Malgun Gothic', sans-serif; margin: 0; background-color: #f4f6f8; }
     .section { border-bottom: 1px solid #ddd; background: #fff; }
     .section-header { 
-      cursor: pointer; padding: 12px 15px; font-weight: bold; font-size: 14px; 
-      display: flex; justify-content: space-between; align-items: center;
-      background-color: #e9ecef; transition: background 0.2s;
+        cursor: pointer; padding: 12px 15px; font-weight: bold; font-size: 14px; 
+        display: flex; justify-content: space-between; align-items: center;
+        background-color: #e9ecef; transition: background 0.2s;
     }
     .section-header:hover { background-color: #dde2e6; }
     .notice-list { list-style-type: none; padding: 0; margin: 0; max-height: 500px; overflow-y: auto; }
     .notice-list li { padding: 10px 15px; border-top: 1px solid #f0f0f0; font-size: 13px; line-height: 1.4; }
     .notice-list li a { text-decoration: none; color: #333; display: block; }
     .notice-list li a:hover { color: #0056b3; text-decoration: underline; }
-    
-    /* NEW 태그 스타일 */
+
     .new-tag { 
       color: white; background-color: #ff4757; font-size: 10px; 
       padding: 2px 5px; border-radius: 4px; font-weight: bold; 
       margin-left: 6px; vertical-align: text-top; 
     }
+
     .loading { text-align: center; color: #666; padding: 15px; font-size: 13px; }
-  </style>
+
+    .footer {
+        text-align: center; 
+        padding: 12px; 
+        font-size: 11px; 
+        color: #888; 
+        background-color: #f4f6f8;
+    }
+    .footer a {
+        color: #888; 
+        text-decoration: none;
+        margin-left: 5px;
+    }
+    .footer a:hover {
+        text-decoration: underline; 
+        color: #555;
+    }
+    </style>
 </head>
 <body>
   
-  <div class="section">
-    <div class="section-header" data-target="eee-list">📘 중앙대 전자전기 공지 <span class="icon">▼</span></div>
-    <ul id="eee-list" class="notice-list">
-      <div class="loading">데이터를 불러오는 중...</div>
-    </ul>
-  </div>
+    <div class="section">
+        <div class="section-header" data-target="eee-list">⚡️ 중앙대 전자전기 공지 <span class="icon">▼</span></div>
+        <ul id="eee-list" class="notice-list">
+            <div class="loading">🌀 데이터를 불러오는 중... 🌀</div>
+        </ul>
+    </div>
 
-  <div class="section">
-    <div class="section-header" data-target="disu-all-list">🌍 혁신공유대학 (전체) <span class="icon">▼</span></div>
-    <ul id="disu-all-list" class="notice-list">
-      <div class="loading">데이터를 불러오는 중...</div>
-    </ul>
-  </div>
+    <div class="section">
+        <div class="section-header" data-target="disu-all-list">👾 차세대 반도체 혁신융합대학 (전체) <span class="icon">▼</span></div>
+        <ul id="disu-all-list" class="notice-list">
+            <div class="loading">🌀 데이터를 불러오는 중... 🌀</div>
+        </ul>
+    </div>
 
-  <div class="section">
-    <div class="section-header" data-target="disu-cau-list">🦅 혁신공유대학 (중앙대) <span class="icon">▼</span></div>
-    <ul id="disu-cau-list" class="notice-list">
-      <div class="loading">데이터를 불러오는 중...</div>
-    </ul>
-  </div>
+    <div class="section">
+        <div class="section-header" data-target="disu-cau-list">👀 차세대 반도체 혁신융합대학 (중앙대) <span class="icon">▼</span></div>
+        <ul id="disu-cau-list" class="notice-list">
+            <div class="loading">🌀 데이터를 불러오는 중... 🌀</div>
+        </ul>
+    </div>
 
-  <script src="popup.js"></script>
+    <div class="footer">
+        © vini___u | <a href="https://viniu.info" target="_blank">개발자에게 연락하기</a>
+    </div>
+
+    <script src="popup.js"></script>
 </body>
 </html>

@@ -1,21 +1,21 @@
 {
-  "manifest_version": 3,
-  "name": "CAU & DISU 공지사항 알림이",
-  "version": "1.2",
-  "description": "전자전기공학부 및 혁신공유대학 최신 공지사항을 모니터링하고 알림을 보냅니다.",
-  "action": {
+    "manifest_version": 3,
+    "name": "CAU EEE & DISU notice",
+    "version": "1.2",
+    "description": "전자전기공학부 및 차세대 반도체 혁신공유대학 최신 공지사항 모니터링",
+    "action": {
     "default_popup": "popup.html"
-  },
-  "background": {
+    },
+    "background": {
     "service_worker": "background.js"
-  },
-  "permissions": [
+    },
+    "permissions": [
     "alarms",
     "storage",
     "notifications"
-  ],
-  "host_permissions": [
+    ],
+    "host_permissions": [
     "*://*.cau.ac.kr/*",
     "*://*.disu.ac.kr/*"
-  ]
+    ]
 }
