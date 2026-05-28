@@ -1,28 +1,25 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // toggle
     document.querySelectorAll('.section-header').forEach(header => {
-        header.addEventListener('click', () => {
-            const targetId = header.getAttribute('data-target');
-            const targetList = document.getElementById(targetId);
-            const icon = header.querySelector('.icon');
-            
-            if (targetList.style.display === 'none') {
-                targetList.style.display = 'block';
-                icon.textContent = '▼';
-            } else {
-                targetList.style.display = 'none';
-                icon.textContent = '▶';
-            }
-        });
-  });
+    header.addEventListener('click', () => {
+        const targetId = header.getAttribute('data-target');
+        const targetList = document.getElementById(targetId);
+        const icon = header.querySelector('.icon');
+        
+        if (targetList.style.display === 'none') {
+        targetList.style.display = 'block';
+        icon.textContent = '▼';
+        } else {
+        targetList.style.display = 'none';
+        icon.textContent = '▶';
+        }
+    });
+    });
 
-    // crawling -> bg
     fetchBoardData('https://e3home.cau.ac.kr/em/em_1.php', 'eee-list');
     fetchBoardData('https://www.disu.ac.kr/community/notice', 'disu-all-list');
     fetchBoardData('https://www.disu.ac.kr/community/notice?cidx=44', 'disu-cau-list');
 });
 
-// Message Passing Crawling
 function fetchBoardData(url, listId) {
     const listElement = document.getElementById(listId);
 
@@ -50,28 +47,26 @@ function fetchBoardData(url, listId) {
         
         let href = url; 
         const hrefAttr = linkElement.getAttribute('href');
-        const trOnClick = row.getAttribute('onclick');
-        const aOnClick = linkElement.getAttribute('onclick');
         
-
-        const jsCode = aOnClick || trOnClick || hrefAttr; 
-
-        if (hrefAttr && hrefAttr !== '#' && !hrefAttr.toLowerCase().includes('javascript:')) {
+        if (listId === 'eee-list') {
+        href = url;
+        } else if (hrefAttr) {
+        const viewMatch = hrefAttr.match(/view\(['"]?(\d+)['"]?\)/);
+        
+        if (viewMatch) {
+            const postId = viewMatch[1];
+            const tempUrl = new URL(url);
+            tempUrl.searchParams.set('mode', 'view');
+            tempUrl.searchParams.set('idx', postId);
+            href = tempUrl.href;
+        } 
+        else if (hrefAttr !== '#' && !hrefAttr.toLowerCase().includes('javascript:')) {
+            try {
             href = new URL(hrefAttr, url).href;
-            } else if (jsCode) {
-            const match = jsCode.match(/['"]([^'"]+)['"]/);
-            if (match) {
-                const extracted = match[1];
-                if (/^\d+$/.test(extracted)) {
-                    const tempUrl = new URL(url);
-                    tempUrl.searchParams.set('mode', 'view');
-                    tempUrl.searchParams.set('id', extracted);
-                    tempUrl.searchParams.set('idx', extracted); 
-                    href = tempUrl.href;
-                } else {
-                    href = new URL(extracted, url).href;
-                }
+            } catch (e) {
+            href = url;
             }
+        }
         }
 
         const rowText = row.innerText;
