@@ -1,75 +1,119 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <title>공지사항</title>
-    <style>
-    body { width: 380px; font-family: 'Malgun Gothic', sans-serif; margin: 0; background-color: #f4f6f8; }
-    .section { border-bottom: 1px solid #ddd; background: #fff; }
-    .section-header { 
-        cursor: pointer; padding: 12px 15px; font-weight: bold; font-size: 14px; 
-        display: flex; justify-content: space-between; align-items: center;
-        background-color: #e9ecef; transition: background 0.2s;
-    }
-    .section-header:hover { background-color: #dde2e6; }
-    .notice-list { list-style-type: none; padding: 0; margin: 0; max-height: 500px; overflow-y: auto; }
-    .notice-list li { padding: 10px 15px; border-top: 1px solid #f0f0f0; font-size: 13px; line-height: 1.4; }
-    .notice-list li a { text-decoration: none; color: #333; display: block; }
-    .notice-list li a:hover { color: #0056b3; text-decoration: underline; }
+document.addEventListener('DOMContentLoaded', () => {
+  // 토글 UI 로직
+    document.querySelectorAll('.section-header').forEach(header => {
+    header.addEventListener('click', () => {
+        const targetId = header.getAttribute('data-target');
+        const targetList = document.getElementById(targetId);
+        const icon = header.querySelector('.icon');
+        
+        if (targetList.style.display === 'none') {
+        targetList.style.display = 'block';
+        icon.textContent = '▼';
+        } else {
+        targetList.style.display = 'none';
+        icon.textContent = '▶';
+        }
+    });
+    });
 
-    .new-tag { 
-      color: white; background-color: #ff4757; font-size: 10px; 
-      padding: 2px 5px; border-radius: 4px; font-weight: bold; 
-      margin-left: 6px; vertical-align: text-top; 
-    }
+    // 크롤링 실행 (팝업창에서 직접 안전하게 fetch)
+    fetchBoardData('https://e3home.cau.ac.kr/em/em_1.php', 'eee-list');
+    fetchBoardData('https://www.disu.ac.kr/community/notice', 'disu-all-list');
+    fetchBoardData('https://www.disu.ac.kr/community/notice?cidx=44', 'disu-cau-list');
+});
 
-    .loading { text-align: center; color: #666; padding: 15px; font-size: 13px; }
+function fetchBoardData(url, listId) {
+  const listElement = document.getElementById(listId);
 
-    .footer {
-        text-align: center; 
-        padding: 12px; 
-        font-size: 11px; 
-        color: #888; 
-        background-color: #f4f6f8;
-    }
-    .footer a {
-        color: #888; 
-        text-decoration: none;
-        margin-left: 5px;
-    }
-    .footer a:hover {
-        text-decoration: underline; 
-        color: #555;
-    }
-    </style>
-</head>
-<body>
-  
-    <div class="section">
-        <div class="section-header" data-target="eee-list">⚡️ 중앙대 전전 공지 <span class="icon">▼</span></div>
-        <ul id="eee-list" class="notice-list">
-            <div class="loading">🌀 데이터를 불러오는 중... 🌀</div>
-        </ul>
-    </div>
+  fetch(url)
+    .then(response => {
+      if (!response.ok) throw new Error('Network response was not ok');
+      return response.text();
+    })
+    .then(html => {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+      
+      const rows = doc.querySelectorAll('table tr'); 
+      const parsedItems = [];
 
-    <div class="section">
-        <div class="section-header" data-target="disu-all-list">👾 차세대 반도체 혁신융합대학 (전체) <span class="icon">▼</span></div>
-        <ul id="disu-all-list" class="notice-list">
-            <div class="loading">🌀 데이터를 불러오는 중... 🌀</div>
-        </ul>
-    </div>
+      rows.forEach(row => {
+        if (row.querySelector('th')) return;
 
-    <div class="section">
-        <div class="section-header" data-target="disu-cau-list">👀 차세대 반도체 혁신융합대학 (중앙대) <span class="icon">▼</span></div>
-        <ul id="disu-cau-list" class="notice-list">
-            <div class="loading">🌀 데이터를 불러오는 중... 🌀</div>
-        </ul>
-    </div>
+        const linkElement = row.querySelector('a');
+        if (!linkElement || linkElement.innerText.trim() === '') return;
 
-    <div class="footer">
-        © vini___u | <a href="https://viniu.info" target="_blank">개발자에게 연락하기</a>
-    </div>
+        const title = linkElement.innerText.trim();
+        
+        let href = url; 
+        const hrefAttr = linkElement.getAttribute('href');
+        
+        if (listId === 'eee-list') {
+          href = url;
+        } else if (hrefAttr) {
+          const viewMatch = hrefAttr.match(/view\(['"]?(\d+)['"]?\)/);
+          if (viewMatch) {
+            const postId = viewMatch[1];
+            const tempUrl = new URL(url);
+            tempUrl.searchParams.set('mode', 'view');
+            tempUrl.searchParams.set('idx', postId);
+            href = tempUrl.href;
+          } else if (hrefAttr !== '#' && !hrefAttr.toLowerCase().includes('javascript:')) {
+            try {
+              href = new URL(hrefAttr, url).href;
+            } catch (e) {
+              href = url;
+            }
+          }
+        }
 
-    <script src="popup.js"></script>
-</body>
-</html>
+        const rowText = row.innerText;
+        const dateMatch = rowText.match(/(\d{2,4})[-./](\d{1,2})[-./](\d{1,2})/);
+        
+        let dateObj = new Date(0); 
+        let dateStr = "";
+
+        if (dateMatch) {
+          let [_, y, m, d] = dateMatch;
+          if (y.length === 2) y = '20' + y; 
+          dateObj = new Date(y, m - 1, d);
+          dateStr = `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
+        }
+
+        parsedItems.push({ title, href, dateObj, dateStr });
+      });
+
+      parsedItems.sort((a, b) => b.dateObj - a.dateObj);
+      const top10 = parsedItems.slice(0, 10);
+      
+      listElement.innerHTML = ''; 
+
+      if (top10.length === 0) {
+        listElement.innerHTML = '<li>게시글을 파싱하지 못했습니다.</li>';
+        return;
+      }
+
+      top10.forEach(item => {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = item.href;
+        a.target = '_blank';
+        a.innerHTML = `${item.title} ${isRecent(item.dateObj) ? '<span class="new-tag">NEW</span>' : ''}`;
+        
+        li.appendChild(a);
+        listElement.appendChild(li);
+      });
+    })
+    .catch(error => {
+      console.error(`${url} Fetch error:`, error);
+      listElement.innerHTML = '<li style="color:red;">데이터를 불러오지 못했습니다.</li>';
+    });
+}
+
+function isRecent(postDate) {
+  if (postDate.getTime() === new Date(0).getTime()) return false; 
+  const now = new Date();
+  const diffTime = Math.abs(now - postDate);
+  const diffDays = diffTime / (1000 * 60 * 60 * 24);
+  return diffDays <= 3; 
+}
